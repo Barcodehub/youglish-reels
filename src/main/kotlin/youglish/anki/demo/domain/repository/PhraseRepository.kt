@@ -22,11 +22,14 @@ interface PhraseRepository : JpaRepository<Phrase, Long> {
         AND p.id NOT IN (
             SELECT vh.phrase.id FROM VideoHistory vh 
             WHERE vh.user = :user 
-            AND vh.createdAt > CURRENT_TIMESTAMP - INTERVAL '1 MINUTE'
+            AND vh.createdAt > :since
         )
         ORDER BY FUNCTION('RANDOM')
     """)
-    fun findRandomActivePhraseExcludingRecent(@Param("user") user: User): List<Phrase>
+    fun findRandomActivePhraseExcludingRecent(
+        @Param("user") user: User,
+        @Param("since") since: java.time.LocalDateTime
+    ): List<Phrase>
 
     fun existsByUserAndText(user: User, text: String): Boolean
 }
